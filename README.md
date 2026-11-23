@@ -97,7 +97,7 @@ Do not commit `.env`; it is excluded by `.gitignore`.
 ## Running the API
 
 ```bash
-uvicorn src.main:app --reload
+python -m uvicorn src.main:app --reload
 ```
 
 The interactive documentation is available at:

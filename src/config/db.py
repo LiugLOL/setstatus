@@ -5,7 +5,6 @@ from contextlib import contextmanager
 from dotenv import load_dotenv
 import psycopg
 from psycopg.rows import dict_row
-#database link on env goes to environment variables on windows
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
