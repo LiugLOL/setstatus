@@ -1,3 +1,5 @@
+"""PostgreSQL connection setup for the SetStatus application."""
+
 import os
 from contextlib import contextmanager
 from dotenv import load_dotenv

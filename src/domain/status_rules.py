@@ -1,8 +1,12 @@
+"""Validation and precedence rules for user statuses."""
+
 import math
 from datetime import datetime, timezone, timedelta
 
 
 def is_status_active(status: dict | None, now: datetime | None = None) -> bool:
+    """Return whether a status has no expiration or expires after ``now``."""
+
     if status is None:
         return False
 
@@ -21,6 +25,8 @@ def resolve_effective_status(
     global_status: dict | None,
     now: datetime | None = None,
 ) -> dict | None:
+    """Resolve an active circle status first, then an active global status."""
+
     if is_status_active(circle_status, now):
         return {**circle_status, "scope": "circle"}
     if is_status_active(global_status, now):
@@ -28,20 +34,22 @@ def resolve_effective_status(
     return None
 
 
-VALID_AVAILABILITIES = {"open", "busy", "essential_only", "dnd"}
+VALID_AVAILABILITIES = {"open", "essential_only", "dnd"}
 
 
 def validate_status_input(status: dict) -> dict:
+    """Validate and normalize API status input into database-ready values."""
+
     if not isinstance(status, dict):
         raise ValueError("status must be a dict")
 
-    text = status.get("text")
-    if not isinstance(text, str):
-        raise ValueError("text must be a string")
+    activity = status.get("activity")
+    if not isinstance(activity, str):
+        raise ValueError("activity must be a string")
 
-    cleaned_text = text.strip()
-    if len(cleaned_text) < 1 or len(cleaned_text) > 140:
-        raise ValueError("text must be between 1 and 140 characters")
+    cleaned_activity = activity.strip()
+    if len(cleaned_activity) < 1 or len(cleaned_activity) > 80:
+        raise ValueError("activity must be between 1 and 80 characters")
 
     availability = status.get("availability")
     if availability not in VALID_AVAILABILITIES:
@@ -61,7 +69,7 @@ def validate_status_input(status: dict) -> dict:
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=expires_in)
 
     return {
-        "text": cleaned_text,
+        "activity": cleaned_activity,
         "availability": availability,
         "expires_at": expires_at,
     }
